@@ -1,0 +1,261 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELED
+}
+
+enum TeamRole {
+  LEADER
+  MEMBER
+}
+
+enum NotificationType {
+  CONNECTION_REQUEST
+  CONNECTION_ACCEPTED
+  TEAM_JOIN
+  TEAM_REMOVED
+  MESSAGE
+  EVENT_UPDATE
+  SYSTEM
+}
+
+enum ReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  username       String   @unique
+  passwordHash   String
+  name           String
+  avatarUrl      String?
+  bio            String?  @db.Text
+  college        String?
+  gradYear       Int?
+  timezone       String?
+  goals          String[] @default([])
+  roles          String[] @default([])
+  role           UserRole @default(USER)
+  isOnline       Boolean  @default(false)
+  lastSeenAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  skills             UserSkill[]
+  sentRequests       ConnectionRequest[] @relation("SentRequests")
+  receivedRequests   ConnectionRequest[] @relation("ReceivedRequests")
+  connectionsA       Connection[]        @relation("UserA")
+  connectionsB       Connection[]        @relation("UserB")
+  teamMemberships    TeamMember[]
+  ledTeams           Team[]              @relation("TeamLeader")
+  organizedEvents    Event[]             @relation("Organizer")
+  eventParticipants  EventParticipant[]
+  conversations      ConversationParticipant[]
+  messages           Message[]
+  notifications      Notification[]
+  reportsFiled       Report[]            @relation("ReportedBy")
+  reportsAgainst     Report[]            @relation("ReportedUser")
+  settings           UserSettings?
+
+  @@index([role])
+}
+
+model Skill {
+  id       String      @id @default(cuid())
+  name     String      @unique
+  category String?
+  users    UserSkill[]
+}
+
+model UserSkill {
+  id      String @id @default(cuid())
+  userId  String
+  skillId String
+  level   String @default("intermediate")
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@index([skillId])
+}
+
+model ConnectionRequest {
+  id           String        @id @default(cuid())
+  senderId     String
+  receiverId   String
+  message      String?
+  status       RequestStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+  respondedAt  DateTime?
+  sender       User          @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver     User          @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId, status])
+}
+
+model Connection {
+  id        String   @id @default(cuid())
+  userAId   String
+  userBId   String
+  createdAt DateTime @default(now())
+  userA     User     @relation("UserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB     User     @relation("UserB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+}
+
+model Team {
+  id              String   @id @default(cuid())
+  name            String
+  description     String   @db.Text
+  leaderId        String
+  eventId         String?
+  maxMembers      Int      @default(5)
+  lookingForRoles String[] @default([])
+  isOpen          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  leader  User          @relation("TeamLeader", fields: [leaderId], references: [id], onDelete: Cascade)
+  event   Event?        @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  members TeamMember[]
+
+  @@index([eventId])
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  userId   String
+  role     TeamRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  type        String
+  organizerId String
+  startDate   DateTime
+  endDate     DateTime
+  location    String?
+  isOnline    Boolean  @default(true)
+  maxTeamSize Int      @default(4)
+  tags        String[] @default([])
+  createdAt   DateTime @default(now())
+
+  organizer    User               @relation("Organizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  teams        Team[]
+  participants EventParticipant[]
+
+  @@index([startDate])
+}
+
+model EventParticipant {
+  id       String   @id @default(cuid())
+  eventId  String
+  userId   String
+  joinedAt DateTime @default(now())
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  isGroup   Boolean  @default(false)
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt])
+}
+
+model UserSettings {
+  id                  String  @id @default(cuid())
+  userId              String  @unique
+  emailNotifications  Boolean @default(true)
+  pushNotifications   Boolean @default(true)
+  profileVisibility   String  @default("public")
+  showAvailability    Boolean @default(true)
+  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Report {
+  id             String       @id @default(cuid())
+  reportedById   String
+  reportedUserId String
+  reason         String
+  details        String?      @db.Text
+  status         ReportStatus @default(OPEN)
+  createdAt      DateTime     @default(now())
+  reportedBy     User         @relation("ReportedBy", fields: [reportedById], references: [id], onDelete: Cascade)
+  reportedUser   User         @relation("ReportedUser", fields: [reportedUserId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}

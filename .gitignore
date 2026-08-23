@@ -1,31 +1,46 @@
-# Dependencies
+# dependencies
 node_modules/
+.pnp
+.pnp.js
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# testing
+coverage/
 
-# Next.js
+# next.js
 .next/
 out/
-
-# Production
 build/
+
+# production
 dist/
 
-# Logs
-*.log
+# prisma
+prisma/dev.db
+prisma/dev.db-journal
+prisma/migrations/**/migration_lock.toml
+
+# env files
+.env
+.env*.local
+.env.development
+.env.production
+!.env.example
+
+# logs
 npm-debug.log*
 yarn-debug.log*
-pnpm-debug.log*
+yarn-error.log*
+*.log
 
-# OS
+# misc
 .DS_Store
-Thumbs.db
-
-# IDE
+*.pem
 .vscode/
 .idea/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel (unused here but harmless to ignore)
+.vercel

@@ -1,17 +1,58 @@
 # FixitHub
 
-**Find the right people. Build the right team.**
+Full-stack platform to find teammates for hackathons, projects, and events based on skills, roles, goals, and availability.
 
-FixitHub is a platform designed to help **college students find like-minded teammates for hackathons and collaborative projects**.
+**Stack:** Next.js 14 · TypeScript · Prisma · PostgreSQL · NextAuth · Socket.io · Zod · Tailwind CSS · Framer Motion · SWR
 
-Many students have the skills and motivation to participate in hackathons but struggle to form a team because they don't know people with **similar interests, complementary skills, or the same goals**.
+## Features
 
-FixitHub aims to make it easier for students to **discover, connect, and collaborate with potential teammates**.
+* Authentication & user profiles
+* Skills, roles & availability
+* Search, filters & match scoring
+* Connection requests
+* Teams & team chat
+* Events
+* Realtime 1:1 & group messaging
+* Typing indicators & presence
+* Notifications
+* Reporting & moderation
 
-## Vision
+## Run
 
-To make team formation easier for students and ensure that **lack of a team is never a barrier to participating in a hackathon.**
+```bash
+git clone https://www.github.com/samoff04/FixItHub.git
+cd FixItHub
+npm install
+cp .env.example .env
+```
 
-## Status
+## Project Structure
 
-**Early-stage project — currently under development.**
+```text
+FixItHub/
+├── server.ts
+├── prisma/
+└── src/
+    ├── middleware.ts
+    ├── lib/
+    ├── types/
+    ├── hooks/
+    ├── components/
+    └── app/
+        ├── login/
+        ├── register/
+        ├── dashboard/
+        ├── discover/
+        ├── profile/
+        ├── teams/
+        ├── events/
+        ├── messages/
+        ├── notifications/
+        ├── settings/
+        ├── admin/
+        └── api/
+```
+
+## Author
+
+Samarth Varshney
