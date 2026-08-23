@@ -4,6 +4,14 @@ Full-stack platform to find teammates for hackathons, projects, and events based
 
 **Stack:** Next.js 14 · TypeScript · Prisma · PostgreSQL · NextAuth · Socket.io · Zod · Tailwind CSS · Framer Motion · SWR
 
+## Overview
+
+![alt text](docs/image.png)
+![alt text](docs/image-1.png)
+![alt text](docs/image-2.png)
+![alt text](docs/image-3.png)
+![alt text](docs/image-4.png)
+
 ## Features
 
 * Authentication & user profiles
@@ -27,10 +35,17 @@ cp .env.example .env
 ```
 
 ## Project Structure
-
-```text
+```
 FixItHub/
 ├── server.ts
+├── package.json
+├── tsconfig.json
+├── next.config.js
+├── tailwind.config.ts
+├── .env.example
+├── .gitignore
+├── README.md
+├── docs/
 ├── prisma/
 └── src/
     ├── middleware.ts
@@ -51,6 +66,16 @@ FixItHub/
         ├── settings/
         ├── admin/
         └── api/
+            ├── auth/
+            ├── profile/
+            ├── discover/
+            ├── connections/
+            ├── teams/
+            ├── events/
+            ├── conversations/
+            ├── notifications/
+            ├── settings/
+            └── reports/
 ```
 
 ## Author
