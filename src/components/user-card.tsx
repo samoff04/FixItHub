@@ -32,8 +32,10 @@ export function UserCard({ user }: { user: ApiUser }) {
     }
   }
 
+  const highMatch = (user.matchScore ?? 0) >= 30;
+
   return (
-    <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+    <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
       <Card className="flex h-full flex-col gap-3">
         <div className="flex items-start justify-between">
           <Link href={`/profile/${user.id}`} className="flex items-center gap-3">
@@ -44,7 +46,7 @@ export function UserCard({ user }: { user: ApiUser }) {
             </div>
           </Link>
           {typeof user.matchScore === "number" && (
-            <Badge className="border-accent/30 bg-accent/10 text-accent">
+            <Badge glow={highMatch} className="border-accent/30 bg-accent/10 text-accent">
               <Sparkles size={11} className="mr-1" /> {user.matchScore}
             </Badge>
           )}

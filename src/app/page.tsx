@@ -1,44 +1,69 @@
-import Link from "next/link";
-import { ArrowRight, Users2, Radar, MessagesSquare, CalendarDays } from "lucide-react";
+import { Radar, Users2, MessagesSquare, CalendarDays, UserPlus } from "lucide-react";
+import Image from "next/image";
+import { PublicNav } from "@/components/public-nav";
+import { LandingHero } from "@/components/landing-hero";
+
+const steps = [
+  { n: "01", icon: UserPlus, title: "Build your profile", desc: "List your skills, the roles you play, and what you're aiming for — a hackathon win, a startup, a portfolio piece." },
+  { n: "02", icon: Radar, title: "Get matched", desc: "FixitHub ranks people by shared skills, complementary roles, and shared goals — not just who's online." },
+  { n: "03", icon: Users2, title: "Form your team", desc: "Send connection requests, open a team with the roles you're missing, and lock it in before the next deadline." },
+];
 
 export default function LandingPage() {
   return (
     <div className="relative -mt-8 overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-40" />
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-primary/20 blur-[120px]" />
+      <PublicNav />
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-40 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_20%,black,transparent)]" />
 
-      <section className="relative flex flex-col items-center px-4 pb-24 pt-28 text-center">
-        <span className="glass mb-6 rounded-full px-4 py-1.5 text-xs text-accent">For students, by students</span>
-        <h1 className="font-display max-w-3xl text-5xl font-semibold leading-tight text-white md:text-6xl">
-          Build your <span className="gradient-text">dream team</span> for what&apos;s next
-        </h1>
-        <p className="mt-5 max-w-xl text-gray-400">
-          FixitHub matches you with teammates by skill, role, and goal — then helps you form a team, join events, and ship together.
-        </p>
-        <div className="mt-8 flex gap-3">
-          <Link href="/register" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent px-6 py-3 text-sm font-medium text-white shadow-glow hover:brightness-110">
-            Get started <ArrowRight size={16} />
-          </Link>
-          <Link href="/login" className="glass inline-flex items-center rounded-xl px-6 py-3 text-sm font-medium text-gray-200 hover:bg-white/10">
-            Sign in
-          </Link>
-        </div>
-      </section>
+      <LandingHero />
 
-      <section className="relative mx-auto grid max-w-5xl grid-cols-1 gap-4 px-4 pb-24 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="relative mx-auto grid max-w-5xl grid-cols-1 gap-4 px-4 pb-20 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { icon: Radar, title: "Smart matching", desc: "Ranked by shared skills, complementary roles, and goals." },
           { icon: Users2, title: "Teams", desc: "Form open teams, set roles you're missing, and fill them fast." },
           { icon: CalendarDays, title: "Events", desc: "Browse hackathons and workshops, join in one click." },
           { icon: MessagesSquare, title: "Realtime chat", desc: "Message connections and teams the moment you match." },
-        ].map((f) => (
-          <div key={f.title} className="glass rounded-2xl p-5 text-left">
-            <f.icon className="mb-3 text-accent" size={22} />
+        ].map((f, i) => (
+          <div
+            key={f.title}
+            className="glass spotlight-card group rounded-2xl p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-glow animate-riseIn"
+            style={{ animationDelay: `${0.1 * i + 0.4}s` }}
+          >
+            <f.icon className="mb-3 text-accent transition-transform duration-300 group-hover:scale-110" size={22} />
             <p className="font-medium text-gray-100">{f.title}</p>
             <p className="mt-1 text-sm text-gray-500">{f.desc}</p>
           </div>
         ))}
       </section>
+
+      <section className="relative mx-auto max-w-4xl px-4 pb-24">
+        <div className="mb-10 text-center">
+          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-accent">The process</p>
+          <h2 className="font-display text-3xl font-semibold text-white">From solo to shipped, in three steps</h2>
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {steps.map((s) => (
+            <div key={s.n} className="glass spotlight-card relative rounded-2xl p-6">
+              <span className="font-display absolute right-5 top-5 text-4xl font-bold text-white/5">{s.n}</span>
+              <div className="mb-4 inline-flex rounded-xl bg-primary/10 p-2.5 text-primary-light">
+                <s.icon size={20} />
+              </div>
+              <p className="font-medium text-gray-100">{s.title}</p>
+              <p className="mt-2 text-sm text-gray-500">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <footer className="relative border-t border-white/5 px-4 py-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-sm text-gray-500 sm:flex-row">
+          <span className="flex items-center gap-2">
+            <Image src="/logo.png" alt="FixitHub" width={18} height={18} className="rounded-md" />
+            FixitHub — built for students, by students.
+          </span>
+          <span>© {new Date().getFullYear()} FixitHub. All rights reserved.</span>
+        </div>
+      </footer>
     </div>
   );
 }

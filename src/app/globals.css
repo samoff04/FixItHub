@@ -12,10 +12,24 @@
 }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
+*::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
 body {
   background-color: #05070f;
   color: #e5e7eb;
+  position: relative;
+}
+
+/* Subtle film-grain overlay for tactile depth — applied once, globally */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .glass {
@@ -25,7 +39,7 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, #818cf8, #67e8f9);
+  background: linear-gradient(90deg, #818cf8, #22d3ee);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -34,14 +48,67 @@ body {
 .focus-ring:focus-visible {
   outline: 2px solid #818cf8;
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
-@keyframes shimmer {
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes shimmerBg {
   0% { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
 .skeleton {
   background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 37%, rgba(255,255,255,0.04) 63%);
   background-size: 800px 100%;
-  animation: shimmer 1.6s linear infinite;
+  animation: shimmerBg 1.6s linear infinite;
+}
+
+/* --- Signature: spotlight card, mouse-reactive glow --- */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(99, 102, 241, 0.16), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.spotlight-card:hover::before { opacity: 1; }
+.spotlight-card > * { position: relative; z-index: 1; }
+
+/* --- Signature: animated conic-gradient border ring for primary CTAs --- */
+.glow-ring {
+  position: relative;
+}
+.glow-ring::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--angle, 0deg), #6366f1, #22d3ee, #a78bfa, #6366f1);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spinSlow 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.glow-ring:hover::before { opacity: 1; }
+
+/* --- Signature: traveling signal dot along an SVG path (landing hero) --- */
+.signal-dot {
+  offset-rotate: 0deg;
+  animation: travel 4s linear infinite;
 }
