@@ -19,9 +19,7 @@ Full-stack platform to find teammates for hackathons, projects, and events based
 * Search, filters & match scoring
 * Connection requests
 * Teams & team chat
-* Events
 * Realtime 1:1 & group messaging
-* Typing indicators & presence
 * Notifications
 * Reporting & moderation
 
@@ -46,6 +44,7 @@ FixItHub/
 ├── .gitignore
 ├── README.md
 ├── docs/
+├── public/
 ├── prisma/
 └── src/
     ├── middleware.ts
